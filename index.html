@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THRIFT.AI — Coba Dulu, Beli Kemudian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FAF7F2;
+    --charcoal: #1A1A18;
+    --olive: #6B7A3E;
+    --rust: #C4622D;
+    --sand: #D4C4A0;
+    --moss: #3D4A2E;
+    --highlight: #E8D44D;
+    --text-muted: #8B8578;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--rust);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-follower {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--rust);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.25s ease, width 0.2s, height 0.2s;
+    mix-blend-mode: multiply;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9000; opacity: 0.35;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    z-index: 100;
+    mix-blend-mode: multiply;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--charcoal);
+  }
+  .nav-logo span { color: var(--rust); }
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 120px 48px 80px 48px;
+    position: relative; z-index: 2;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; display: block;
+    width: 32px; height: 1px;
+    background: var(--rust);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 9vw, 130px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: var(--charcoal);
+    margin-bottom: 28px;
+  }
+  .hero-title .accent {
+    color: var(--rust);
+    position: relative;
+    display: inline-block;
+  }
+  .hero-title .underline-word {
+    position: relative;
+    display: inline-block;
+  }
+  .hero-title .underline-word::after {
+    content: '';
+    position: absolute; bottom: 4px; left: 0; right: 0;
+    height: 6px;
+    background: var(--highlight);
+    z-index: -1;
+    transform: skewX(-8deg);
+  }
+
+  .hero-desc {
+    font-size: 16px; line-height: 1.7;
+    color: var(--text-muted); max-width: 400px;
+    margin-bottom: 44px;
+  }
+
+  .hero-cta {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .btn-primary {
+    background: var(--charcoal);
+    color: var(--cream);
+    border: none;
+    padding: 16px 36px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: none;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--rust);
+    transform: translateX(-102%);
+    transition: transform 0.3s ease;
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-ghost {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    opacity: 0.5;
+    cursor: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: opacity 0.2s;
+    background: none; border: none;
+  }
+  .btn-ghost:hover { opacity: 1; }
+
+  .hero-stats {
+    display: flex; gap: 40px;
+    margin-top: 60px; padding-top: 40px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px; color: var(--charcoal);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 1px; margin-top: 4px;
+  }
+
+  /* HERO RIGHT — Try-On Preview */
+  .hero-right {
+    position: relative;
+    background: var(--moss);
+    overflow: hidden;
+  }
+  .hero-right-inner {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Animated try-on demo */
+  .tryon-demo {
+    width: 280px; height: 420px;
+    position: relative;
+  }
+  .tryon-frame {
+    width: 100%; height: 100%;
+    border: 2px solid rgba(255,255,255,0.15);
+    position: relative; overflow: hidden;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Silhouette */
+  .silhouette {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 160px; height: 340px;
+  }
+  .silhouette svg { width: 100%; height: 100%; }
+
+  /* Scanning animation */
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--highlight), transparent);
+    animation: scan 3s ease-in-out infinite;
+    box-shadow: 0 0 20px var(--highlight);
+  }
+  @keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* Outfit cards floating */
+  .outfit-card {
+    position: absolute;
+    background: var(--cream);
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--charcoal);
+    animation: float-card 4s ease-in-out infinite;
+  }
+  .outfit-card.card-1 { top: 15%; right: -20px; animation-delay: 0s; }
+  .outfit-card.card-2 { top: 50%; left: -25px; animation-delay: 1.5s; }
+  .outfit-card.card-3 { bottom: 20%; right: -15px; animation-delay: 0.8s; }
+  @keyframes float-card {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .card-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-bottom: 4px;
+  }
+  .card-dot.green { background: #4CAF50; }
+  .card-dot.yellow { background: var(--highlight); }
+  .card-dot.blue { background: #64B5F6; }
+
+  .tryon-label {
+    position: absolute; bottom: -50px;
+    left: 50%; transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* AI badge */
+  .ai-badge {
+    position: absolute; top: 40px; right: 40px;
+    background: var(--highlight);
+    padding: 8px 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 3px;
+    color: var(--charcoal);
+    transform: rotate(3deg);
+  }
+
+  /* HOW IT WORKS */
+  .section-how {
+    padding: 140px 48px;
+    background: var(--charcoal);
+    position: relative; overflow: hidden;
+  }
+  .section-how::before {
+    content: 'HOW';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 300px;
+    color: rgba(255,255,255,0.02);
+    position: absolute; top: -40px; left: -20px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before {
+    content: ''; width: 24px; height: 1px;
+    background: var(--rust);
+  }
+
+  .section-title-light {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 6vw, 80px);
+    color: var(--cream);
+    line-height: 1; margin-bottom: 80px;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+  }
+  .step-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 40px 32px;
+    position: relative;
+    transition: background 0.3s;
+  }
+  .step-card:hover {
+    background: rgba(255,255,255,0.07);
+  }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+    position: absolute; top: 16px; right: 20px;
+  }
+  .step-icon {
+    width: 48px; height: 48px;
+    background: var(--rust);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    font-size: 22px;
+  }
+  .step-title {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--cream);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .step-desc {
+    font-size: 14px; line-height: 1.7;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* CATALOG SECTION */
+  .section-catalog {
+    padding: 140px 48px;
+    background: var(--warm-white);
+    position: relative;
+  }
+
+  .catalog-header {
+    display: flex; align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 60px;
+  }
+  .section-title-dark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 6vw, 80px);
+    color: var(--charcoal);
+    line-height: 0.95;
+  }
+  .catalog-filter {
+    display: flex; gap: 8px;
+  }
+  .filter-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: none;
+    color: var(--text-muted);
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--charcoal);
+    color: var(--cream);
+    border-color: var(--charcoal);
+  }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .item-card {
+    position: relative; cursor: none;
+    transition: transform 0.3s;
+  }
+  .item-card:hover { transform: translateY(-6px); }
+  .item-card:nth-child(2) { margin-top: 40px; }
+  .item-card:nth-child(4) { margin-top: 24px; }
+
+  .item-img {
+    width: 100%; aspect-ratio: 3/4;
+    background: var(--sand);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .item-img-inner {
+    width: 80%; height: 80%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+    filter: grayscale(0.3);
+    transition: transform 0.4s;
+  }
+  .item-card:hover .item-img-inner { transform: scale(1.08); }
+
+  .item-tag {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--highlight);
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 2px;
+    padding: 4px 10px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+  }
+  .item-tag.imported { background: var(--rust); color: white; }
+
+  .try-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,24,0.7);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .item-card:hover .try-overlay { opacity: 1; }
+  .try-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 3px;
+    color: var(--highlight);
+    border: 1px solid var(--highlight);
+    padding: 12px 28px;
+    background: none;
+    cursor: none;
+  }
+
+  .item-info { padding: 16px 0 0; }
+  .item-name {
+    font-weight: 500; font-size: 14px;
+    color: var(--charcoal); margin-bottom: 4px;
+  }
+  .item-meta {
+    display: flex; justify-content: space-between;
+    align-items: center;
+  }
+  .item-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--rust);
+  }
+  .item-size {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--text-muted);
+  }
+
+  /* TRY-ON FEATURE SECTION */
+  .section-tryon {
+    padding: 140px 48px;
+    background: var(--olive);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative; overflow: hidden;
+  }
+  .section-tryon::before {
+    content: 'AI';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 400px;
+    color: rgba(0,0,0,0.08);
+    position: absolute; right: -40px; top: -80px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .tryon-content {}
+  .tryon-feature-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .tryon-feature-label::before {
+    content: ''; width: 24px; height: 1px;
+    background: var(--highlight);
+  }
+
+  .tryon-feature-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 6vw, 72px);
+    color: var(--cream);
+    line-height: 1; margin-bottom: 28px;
+  }
+  .tryon-feature-desc {
+    font-size: 16px; line-height: 1.8;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 40px;
+  }
+
+  .feature-list {
+    list-style: none; display: flex; flex-direction: column; gap: 16px;
+    margin-bottom: 44px;
+  }
+  .feature-list li {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 14px; color: rgba(255,255,255,0.7);
+  }
+  .feature-list li::before {
+    content: '→';
+    color: var(--highlight);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Upload demo box */
+  .upload-demo {
+    background: rgba(0,0,0,0.2);
+    border: 1px dashed rgba(255,255,255,0.2);
+    padding: 60px 40px;
+    text-align: center;
+    position: relative; z-index: 2;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .upload-demo:hover {
+    border-color: var(--highlight);
+    background: rgba(0,0,0,0.3);
+  }
+  .upload-icon { font-size: 48px; margin-bottom: 20px; }
+  .upload-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 3px;
+    color: var(--cream); margin-bottom: 8px;
+  }
+  .upload-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* AI Processing animation */
+  .ai-process {
+    display: flex; flex-direction: column; gap: 10px;
+    text-align: left;
+  }
+  .process-bar {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .process-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    display: flex; justify-content: space-between;
+  }
+  .process-track {
+    height: 3px; background: rgba(255,255,255,0.1);
+    position: relative; overflow: hidden;
+  }
+  .process-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--highlight);
+    animation: fill-bar 2.5s ease-in-out infinite;
+  }
+  .process-fill.delay1 { animation-delay: 0.4s; }
+  .process-fill.delay2 { animation-delay: 0.8s; }
+  @keyframes fill-bar {
+    0% { width: 0%; }
+    60% { width: 100%; }
+    100% { width: 100%; }
+  }
+
+  /* SOCIAL PROOF */
+  .section-proof {
+    padding: 100px 48px;
+    background: var(--cream);
+  }
+  .proof-header {
+    text-align: center; margin-bottom: 60px;
+  }
+  .testimonials {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .testimonial {
+    background: var(--warm-white);
+    padding: 40px;
+    border: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .testimonial::before {
+    content: '"';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: rgba(0,0,0,0.05);
+    position: absolute; top: -20px; left: 20px;
+    line-height: 1;
+  }
+  .testimonial-text {
+    font-size: 15px; line-height: 1.7;
+    color: var(--charcoal);
+    margin-bottom: 24px; font-style: italic;
+  }
+  .testimonial-author {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .author-avatar {
+    width: 36px; height: 36px;
+    background: var(--sand);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .author-name {
+    font-weight: 500; font-size: 13px;
+    color: var(--charcoal);
+  }
+  .author-loc {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+  .rating {
+    color: var(--rust); font-size: 12px;
+    margin-left: auto;
+  }
+
+  /* CTA SECTION */
+  .section-cta {
+    background: var(--charcoal);
+    padding: 120px 48px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .section-cta::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(196,98,45,0.15) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .cta-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--highlight);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .cta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 110px);
+    color: var(--cream);
+    line-height: 0.9;
+    margin-bottom: 28px;
+  }
+  .cta-sub {
+    font-size: 16px; color: rgba(255,255,255,0.4);
+    margin-bottom: 48px; max-width: 500px;
+    margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+  .cta-buttons {
+    display: flex; gap: 16px;
+    justify-content: center; align-items: center;
+  }
+  .btn-cta-primary {
+    background: var(--rust); color: var(--cream);
+    border: none; padding: 18px 48px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 3px;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .btn-cta-primary:hover { background: var(--highlight); color: var(--charcoal); }
+  .btn-cta-ghost {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    background: none; border: 1px solid rgba(255,255,255,0.15);
+    padding: 18px 36px; cursor: none;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-cta-ghost:hover {
+    color: var(--cream); border-color: rgba(255,255,255,0.5);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--moss);
+    padding: 60px 48px 40px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 60px;
+  }
+  .footer-brand {}
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 4px;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .footer-logo span { color: var(--highlight); }
+  .footer-tagline {
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    line-height: 1.7; max-width: 240px;
+    margin-bottom: 24px;
+  }
+  .footer-social {
+    display: flex; gap: 12px;
+  }
+  .social-link {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: rgba(255,255,255,0.4);
+    cursor: none; transition: all 0.2s;
+    text-decoration: none;
+  }
+  .social-link:hover {
+    background: var(--highlight);
+    border-color: var(--highlight);
+    color: var(--charcoal);
+  }
+  .footer-col-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 24px;
+  }
+  .footer-links {
+    list-style: none; display: flex;
+    flex-direction: column; gap: 12px;
+  }
+  .footer-links a {
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    text-decoration: none; transition: color 0.2s;
+    cursor: none;
+  }
+  .footer-links a:hover { color: var(--cream); }
+  .footer-bottom {
+    background: rgba(0,0,0,0.2);
+    padding: 20px 48px;
+    display: flex; justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { height: 300px; }
+    .hero-left { padding: 100px 24px 60px; }
+    .steps-grid, .items-grid, .testimonials { grid-template-columns: 1fr 1fr; }
+    .section-tryon { grid-template-columns: 1fr; padding: 80px 24px; }
+    footer { grid-template-columns: 1fr 1fr; gap: 40px; padding: 40px 24px; }
+    .section-how, .section-catalog, .section-proof, .section-cta { padding: 80px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursor-follower"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">THRIFT<span>.</span>AI</div>
+  <ul class="nav-links">
+    <li><a href="#">Koleksi</a></li>
+    <li><a href="#">Virtual Try-On</a></li>
+    <li><a href="#">Import</a></li>
+    <li><a href="#">Tentang</a></li>
+  </ul>
+  <button class="btn-primary" style="padding:12px 24px"><span>Mulai Coba →</span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Thrift Store Generasi Baru</div>
+    <h1 class="hero-title">
+      COBA<br>
+      <span class="underline-word">DULU</span><br>
+      BELI<br>
+      <span class="accent">KEMUDIAN</span>
+    </h1>
+    <p class="hero-desc">
+      Thrift impor berkualitas tinggi dengan teknologi AI Virtual Try-On. 
+      Upload fotomu — lihat bagaimana bajunya cocok di tubuhmu sebelum checkout.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary"><span>Coba Sekarang — Gratis</span></button>
+      <button class="btn-ghost">▶ Lihat Demo</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">4.2K+</div>
+        <div class="stat-label">Item Tersedia</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">89%</div>
+        <div class="stat-label">Penurunan Retur</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">&lt;3s</div>
+        <div class="stat-label">Waktu AI Processing</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="ai-badge">AI TRY-ON</div>
+    <div class="hero-right-inner">
+      <div class="tryon-demo">
+        <div class="tryon-frame">
+          <div class="scan-line"></div>
+          <div class="silhouette">
+            <svg viewBox="0 0 160 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Head -->
+              <ellipse cx="80" cy="28" rx="20" ry="24" fill="rgba(255,255,255,0.12)"/>
+              <!-- Neck -->
+              <rect x="73" y="50" width="14" height="14" fill="rgba(255,255,255,0.1)"/>
+              <!-- Body with jacket outline -->
+              <path d="M30 70 L55 60 L80 68 L105 60 L130 70 L125 160 L100 160 L95 200 L65 200 L60 160 L35 160 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+              <!-- Jeans -->
+              <path d="M60 200 L35 290 L60 290 L80 245 L100 290 L125 290 L100 200 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+              <!-- Collar highlight -->
+              <path d="M65 65 L80 80 L95 65" stroke="rgba(232,212,77,0.5)" stroke-width="1.5" fill="none"/>
+              <!-- Lapels -->
+              <path d="M55 60 L50 100 L75 90 L80 68" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+              <path d="M105 60 L110 100 L85 90 L80 68" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            </svg>
+          </div>
+
+          <!-- AI overlay dots -->
+          <div style="position:absolute;top:20px;left:20px;right:20px;bottom:20px;pointer-events:none;">
+            <div style="position:absolute;top:8%;left:50%;width:8px;height:8px;background:rgba(232,212,77,0.6);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 12px rgba(232,212,77,0.4);"></div>
+            <div style="position:absolute;top:25%;left:25%;width:6px;height:6px;border:1px solid rgba(232,212,77,0.4);border-radius:50%;"></div>
+            <div style="position:absolute;top:25%;right:25%;width:6px;height:6px;border:1px solid rgba(232,212,77,0.4);border-radius:50%;"></div>
+          </div>
+        </div>
+
+        <!-- Floating info cards -->
+        <div class="outfit-card card-1">
+          <div class="card-dot green"></div>
+          UKURAN COCOK<br>
+          <span style="opacity:0.5">M — 170cm/60kg</span>
+        </div>
+        <div class="outfit-card card-2">
+          <div class="card-dot yellow"></div>
+          WARNA MATCH<br>
+          <span style="opacity:0.5">Skin: Warm</span>
+        </div>
+        <div class="outfit-card card-3">
+          <div class="card-dot blue"></div>
+          STYLE SCORE<br>
+          <span style="opacity:0.5">94 / 100</span>
+        </div>
+
+        <div class="tryon-label">AI VIRTUAL FITTING ROOM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section-how">
+  <div class="section-label">Cara Kerja</div>
+  <h2 class="section-title-light">SEMUDAH SELFIE,<br>SECANGIH RUNWAY</h2>
+
+  <div class="steps-grid">
+    <div class="step-card reveal">
+      <div class="step-num">01</div>
+      <div class="step-icon">📸</div>
+      <div class="step-title">Upload Foto Full-Body</div>
+      <div class="step-desc">Cukup foto standar dari HP-mu. AI kami akan menganalisis proporsi tubuhmu secara akurat.</div>
+    </div>
+    <div class="step-card reveal reveal-delay-1">
+      <div class="step-num">02</div>
+      <div class="step-icon">🤖</div>
+      <div class="step-title">AI Analisis Tubuhmu</div>
+      <div class="step-desc">Teknologi pose estimation & body measurement membuat model 3D dirimu dalam hitungan detik.</div>
+    </div>
+    <div class="step-card reveal reveal-delay-2">
+      <div class="step-num">03</div>
+      <div class="step-icon">👗</div>
+      <div class="step-title">Coba Ribuan Outfit</div>
+      <div class="step-desc">Pilih baju yang kamu suka — AI akan render bagaimana tampilannya di tubuhmu secara real-time.</div>
+    </div>
+    <div class="step-card reveal reveal-delay-3">
+      <div class="step-num">04</div>
+      <div class="step-icon">🛒</div>
+      <div class="step-title">Checkout dengan Yakin</div>
+      <div class="step-desc">Sudah tahu hasilnya sebelum beli. Tidak ada lagi drama "nggak muat" atau "beda sama foto".</div>
+    </div>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section class="section-catalog">
+  <div class="catalog-header">
+    <div>
+      <div class="section-label">Koleksi Terbaru</div>
+      <h2 class="section-title-dark">PILIHAN<br>MINGGU INI</h2>
+    </div>
+    <div class="catalog-filter">
+      <button class="filter-btn active">Semua</button>
+      <button class="filter-btn">Jaket</button>
+      <button class="filter-btn">Kemeja</button>
+      <button class="filter-btn">Dress</button>
+    </div>
+  </div>
+
+  <div class="items-grid">
+    <div class="item-card reveal">
+      <div class="item-img">
+        <div class="item-tag imported">Import JP</div>
+        <div class="item-img-inner">🧥</div>
+        <div class="try-overlay">
+          <button class="try-btn">COBA AI →</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-name">Vintage Wool Coat</div>
+        <div class="item-meta">
+          <div class="item-price">Rp 285.000</div>
+          <div class="item-size">M · L</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item-card reveal reveal-delay-1">
+      <div class="item-img" style="background:#D4C4A0;">
+        <div class="item-tag">Koleksi Baru</div>
+        <div class="item-img-inner">👕</div>
+        <div class="try-overlay">
+          <button class="try-btn">COBA AI →</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-name">Linen Stripe Shirt</div>
+        <div class="item-meta">
+          <div class="item-price">Rp 120.000</div>
+          <div class="item-size">S · M · L</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item-card reveal reveal-delay-2">
+      <div class="item-img" style="background:#C8BFA8;">
+        <div class="item-tag imported">Import KR</div>
+        <div class="item-img-inner">👗</div>
+        <div class="try-overlay">
+          <button class="try-btn">COBA AI →</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-name">Midi Wrap Dress</div>
+        <div class="item-meta">
+          <div class="item-price">Rp 175.000</div>
+          <div class="item-size">S · M</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item-card reveal reveal-delay-3">
+      <div class="item-img" style="background:#BFB49A;">
+        <div class="item-tag">⚡ Last Stock</div>
+        <div class="item-img-inner">🧣</div>
+        <div class="try-overlay">
+          <button class="try-btn">COBA AI →</button>
+        </div>
+      </div>
+      <div class="item-info">
+        <div class="item-name">Knit Cardigan Oversized</div>
+        <div class="item-meta">
+          <div class="item-price">Rp 155.000</div>
+          <div class="item-size">One Size</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRY-ON FEATURE -->
+<section class="section-tryon">
+  <div class="tryon-content reveal">
+    <div class="tryon-feature-label">Teknologi AI</div>
+    <h2 class="tryon-feature-title">FITTING ROOM<br>ADA DI<br>GENGGAMANMU</h2>
+    <p class="tryon-feature-desc">
+      Tidak perlu keluar rumah, tidak perlu ragu ukuran. Teknologi AI Virtual Try-On kami menggunakan 
+      body estimation terdepan untuk simulasi yang realistis.
+    </p>
+    <ul class="feature-list">
+      <li>Deteksi ukuran otomatis dari 1 foto — tanpa meteran</li>
+      <li>Render real-time dalam &lt;3 detik per outfit</li>
+      <li>Rekomendasi size berdasarkan proporsi tubuhmu</li>
+      <li>Bisa coba berbagai warna varian dalam satu sesi</li>
+      <li>Simpan & bandingkan beberapa outfit sekaligus</li>
+    </ul>
+    <button class="btn-primary"><span>Upload Foto & Mulai Coba →</span></button>
+  </div>
+
+  <div class="upload-demo reveal reveal-delay-1">
+    <div class="upload-icon">📲</div>
+    <div class="upload-title">DROP YOUR PHOTO</div>
+    <div class="upload-sub">JPG / PNG · Max 10MB · Full Body</div>
+    <div class="ai-process">
+      <div class="process-bar">
+        <div class="process-label">
+          <span>Analyzing body proportion</span>
+          <span style="color:var(--highlight)">✓ Done</span>
+        </div>
+        <div class="process-track">
+          <div class="process-fill" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="process-bar">
+        <div class="process-label">
+          <span>Generating 3D mesh</span>
+          <span style="color:var(--highlight)">✓ Done</span>
+        </div>
+        <div class="process-track">
+          <div class="process-fill delay1" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="process-bar">
+        <div class="process-label">
+          <span>Rendering outfit overlay</span>
+          <span style="color:rgba(255,255,255,0.3)">Processing...</span>
+        </div>
+        <div class="process-track">
+          <div class="process-fill delay2"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:16px;background:rgba(232,212,77,0.1);border:1px solid rgba(232,212,77,0.2);">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--highlight);letter-spacing:2px;">AI RECOMMENDATION</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:6px;line-height:1.5;">
+        Ukuran M cocok untuk kamu. Bahu sedikit longgar — memberikan oversized look yang trendy.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="section-proof">
+  <div class="proof-header">
+    <div class="section-label" style="justify-content:center;margin-bottom:12px;">Kata Pembeli</div>
+    <h2 class="section-title-dark" style="text-align:center;font-size:clamp(36px,5vw,60px)">
+      MEREKA SUDAH<br>PERCAYA THRIFT.AI
+    </h2>
+  </div>
+  <div class="testimonials">
+    <div class="testimonial reveal">
+      <p class="testimonial-text">
+        "Dulu selalu ragu beli baju online karena takut nggak muat. Sejak pakai Thrift.AI, 
+        semua yang aku beli langsung pas. Udah 8 item dan belum pernah retur sekali pun!"
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar">🧕</div>
+        <div>
+          <div class="author-name">Sari Dewi</div>
+          <div class="author-loc">Jakarta · 23 pembeli</div>
+        </div>
+        <div class="rating">★★★★★</div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-1">
+      <p class="testimonial-text">
+        "AI try-on-nya akurat banget. Aku upload foto, pilih jaket vintage import Jepang, 
+        dan tampilannya persis seperti yang diprediksi AI. Keren abis!"
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👨</div>
+        <div>
+          <div class="author-name">Bimo Aryanto</div>
+          <div class="author-loc">Surabaya · 11 pembeli</div>
+        </div>
+        <div class="rating">★★★★★</div>
+      </div>
+    </div>
+    <div class="testimonial reveal reveal-delay-2">
+      <p class="testimonial-text">
+        "Thrift tapi premium banget vibenya. Harga terjangkau, kualitas impor, 
+        dan bisa coba virtual dulu. Ini yang aku tunggu-tunggu dari dulu!"
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩</div>
+        <div>
+          <div class="author-name">Reni Kusuma</div>
+          <div class="author-loc">Bandung · 17 pembeli</div>
+        </div>
+        <div class="rating">★★★★★</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-cta">
+  <div class="cta-eyebrow">Mulai Sekarang — Gratis</div>
+  <h2 class="cta-title">THRIFT LEBIH<br>PINTAR DENGAN AI</h2>
+  <p class="cta-sub">
+    Daftar gratis dan dapatkan 3x virtual try-on tanpa batas. 
+    Tidak ada kartu kredit yang dibutuhkan.
+  </p>
+  <div class="cta-buttons">
+    <button class="btn-cta-primary">Daftar Gratis Sekarang</button>
+    <button class="btn-cta-ghost">Lihat Semua Koleksi</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-logo">THRIFT<span>.</span>AI</div>
+    <p class="footer-tagline">Digital thrift store pertama di Indonesia dengan teknologi AI Virtual Try-On.</p>
+    <div class="footer-social">
+      <a class="social-link" href="#">ig</a>
+      <a class="social-link" href="#">tk</a>
+      <a class="social-link" href="#">tw</a>
+      <a class="social-link" href="#">wa</a>
+    </div>
+  </div>
+  <div>
+    <div class="footer-col-title">Belanja</div>
+    <ul class="footer-links">
+      <li><a href="#">Semua Item</a></li>
+      <li><a href="#">Import Jepang</a></li>
+      <li><a href="#">Import Korea</a></li>
+      <li><a href="#">Flash Sale</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Fitur</div>
+    <ul class="footer-links">
+      <li><a href="#">AI Try-On</a></li>
+      <li><a href="#">Size Recommender</a></li>
+      <li><a href="#">Outfit Matcher</a></li>
+      <li><a href="#">Style Score</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Info</div>
+    <ul class="footer-links">
+      <li><a href="#">Tentang Kami</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Karir</a></li>
+      <li><a href="#">Kontak</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <div class="footer-copy">© 2025 THRIFT.AI — All rights reserved</div>
+  <div class="footer-copy">Dibuat dengan 🤍 di Indonesia</div>
+</div>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const follower = document.getElementById('cursor-follower');
+  let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.transform = `translate(${mouseX - 6}px, ${mouseY - 6}px)`;
+  });
+
+  function animateFollower() {
+    followerX += (mouseX - followerX - 18) * 0.12;
+    followerY += (mouseY - followerY - 18) * 0.12;
+    follower.style.transform = `translate(${followerX}px, ${followerY}px)`;
+    requestAnimationFrame(animateFollower);
+  }
+  animateFollower();
+
+  // Hover effect on interactive elements
+  document.querySelectorAll('button, a, .item-card, .step-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform += ' scale(2)';
+      follower.style.width = '60px';
+      follower.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      follower.style.width = '36px';
+      follower.style.height = '36px';
+    });
+  });
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Catalog filter hover
+  document.querySelectorAll('.item-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      cursor.style.background = '#E8D44D';
+    });
+    card.addEventListener('mouseleave', () => {
+      cursor.style.background = 'var(--rust)';
+    });
+  });
+</script>
+</body>
+</html>
